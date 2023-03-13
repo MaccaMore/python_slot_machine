@@ -49,6 +49,7 @@ def playerInputFunc():
 
 def featureFunc(lines):
     featureCounter = 6
+    lines = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
     print("FEATURE!")
     while featureCounter > 0:
         xPositions = []
@@ -66,18 +67,17 @@ def featureFunc(lines):
         print(f"Feature Counter: {featureCounter}")
 
         if all(line == ["X", "X", "X"] for line in lines):
-            playerData.previousWin += 1000 * playerData.betAmount
-            print("\n  ____   __    ___  _  _  ____  _____  ____ \n\
-                  (_  _) /__\\  / __)( )/ )(  _ \\(  _  )(_  _)\n\
-                  .-_)(  /(__)\\( (__  )  (  )___/ )(_)(   )(  \n\
-                  \\____)(__)(__)\\___)(_)\\_)(__)  (_____) (__) \n\
-            | 1000x return and 20 free games! |")
-            playerData.freeGames = 21
+            playerData.previousWin = playerData.previousWin + 1000 * playerData.betAmount
+            print("\
+                   ____   __    ___  _  _  ____  _____  ____ \n\
+                  (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
+                  .-_)(  /(__)\( (__  )  (  )___/ )(_)(   )(  \n\
+                  \____)(__)(__)\___)(_)\_)(__)  (_____) (__) \n\
+            | 1000x return and 5 free games! |")
+            playerData.freeGames = 6
             break
-        else:
-            playerData.freeGames = sum(line.count("X") for line in lines)
-            playerData.previousWin = sum(
-                line.count("X") for line in lines) * 2 * playerData.betAmount + playerData.previousWin
+    playerData.previousWin = sum(line.count("X") for line in lines) * 20 * playerData.betAmount + playerData.previousWin
+    print(f"You win: {playerData.previousWin} Free Games: {playerData.freeGames}")
 
 
 # This is the math behind slot
