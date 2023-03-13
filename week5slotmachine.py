@@ -6,6 +6,8 @@
     # Make chance for X variable accessible
     # In future, GUI?
     # Make player bar scale with credit and win amount
+    # Make symbol have chances of appearing
+    # Psuedo random for feature symbol 
 
 
 # Random for randomizing symbols, time for slowing down feature function
@@ -64,7 +66,7 @@ def featureFunc(lines):
         xPositions = []
         for a in range(len(lines)):
             for b in range(len(lines[a])):
-                if random.random() < 0.5 and lines[a][b] != "X":
+                if random.random() < 0.3 and lines[a][b] != "X":
                     lines[a][b] = "X"
                     xPositions.append([a, b])
         if len(lines) == 3:
@@ -79,10 +81,11 @@ def featureFunc(lines):
              (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
             .-_)(  /(__)\( (__  )  (  )___/ )(_)(   )(  \n\
             \____)(__)(__)\___)(_)\_)(__)  (_____) (__) \n\
-____________| 1000x [{playerData.previousWin}] return and 5 free games! |____________")
+_____________| 1000x return    and     5 free games! |_____________")
+            time.sleep(2)
             playerData.freeGames = 6
             break
-    playerData.previousWin = sum(line.count("X") for line in lines) * 20 * playerData.betAmount + playerData.previousWin
+    playerData.previousWin = sum(line.count("X") for line in lines) * 5 * playerData.betAmount + playerData.previousWin
 
 # This is the math behind slot
 def leverPull():
