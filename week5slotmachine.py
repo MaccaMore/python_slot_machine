@@ -1,17 +1,11 @@
-#Plan for code:
-#Slot machine with only have 3 lines, 
-# a list with each character that includes multiplier for 2 and 3 of a kind. 
-#   If all 3 are 'X', go to a feature function
-#   If all 9 in the 3 lines are X, 1000x return and 10 free spins
-#At bottom of console always show: "Credit:", "Previous win:" "Bet Amount", "Lines"
-#   Allow user to input only return to bet again
-#   Allow user to select bet amount from a list
-#   Allow user to select 1-3 lines
-#Inputs can be: "return" "line [1-3]" "bet [$.50, $2, $10, $50]" "help (shows commands)
+
 
 #TODO/ bugs:
     #Sanitize user inputs
     #Allow changing bet amount and lines after first pull
+    #Make it so user cannot bet under 0 credits
+    #Program in diagonals for addtional lines
+    #Make chance for X variable accessible
 
 #Random for randomizing symbols, time for slowing down feature function
 import random
