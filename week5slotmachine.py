@@ -4,6 +4,7 @@
     #Make it so user cannot bet under 0 credits
     #Program in diagonals for addtional lines
     #Make chance for X variable accessible
+    #After Jackpot won a single line is played using a free game?
 
 # Random for randomizing symbols, time for slowing down feature function
 import random
@@ -74,23 +75,27 @@ def featureFunc(lines):
                   (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
                   .-_)(  /(__)\( (__  )  (  )___/ )(_)(   )(  \n\
                   \____)(__)(__)\___)(_)\_)(__)  (_____) (__) \n\
-            | 1000x return and 5 free games! |")
+                      | 1000x return and 5 free games! |")
             playerData.freeGames = 6
             break
     playerData.previousWin = sum(line.count("X") for line in lines) * 20 * playerData.betAmount + playerData.previousWin
-    print(f"You win: {playerData.previousWin} Free Games: {playerData.freeGames}")
+    print(" ____________________________________________________________________________")
+    print(f"|You've won!: {playerData.previousWin}                                        ")
+    print(" ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾")
 
 
 # This is the math behind slot
 def leverPull():
     #
     lines = []
+    print(" \n \n")
     # Randomly chooses 3 from symbolChart and prints
     for a in range(playerData.lines):
         line = []
         for b in range(3):
             line.append(random.choice(slotLine.symbolChart))
         print(line)
+        time.sleep(0.1)
         lines.append(line)
         # Checks if 3 of a kind
         if line[0] == line[1] == line[2]:
@@ -113,9 +118,11 @@ def leverPull():
     # Add previousWin to credit
     playerData.credit = playerData.credit + playerData.previousWin
     # Displays current status
+    print(" ____________________________________________________________________________")
     print(
         f"| Credits: {playerData.credit:.1f} | Previous Win: {playerData.previousWin * playerData.betAmount}"
         f" | Bet Amount: {playerData.betAmount} | Lines: {playerData.lines} | Free Games: {playerData.freeGames} |")
+    print(" ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾")
 
     # Add previousWin to previousWinData list for win tracking
     playerData.previousWinData.append(playerData.previousWin)
