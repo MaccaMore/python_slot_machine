@@ -49,9 +49,11 @@ def playerInputFunc():
 
 def featureFunc(lines):
     featureCounter = 6
+    lines = ""
     lines = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
     print("FEATURE!")
     while featureCounter > 0:
+        print(f"Feature Counter: {featureCounter}")
         xPositions = []
         for a in range(len(lines)):
             for b in range(len(lines[a])):
@@ -64,7 +66,6 @@ def featureFunc(lines):
         else:
             print(lines)
         featureCounter -= 1
-        print(f"Feature Counter: {featureCounter}")
 
         if all(line == ["X", "X", "X"] for line in lines):
             playerData.previousWin = playerData.previousWin + 1000 * playerData.betAmount
