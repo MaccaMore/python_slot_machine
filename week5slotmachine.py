@@ -1,10 +1,12 @@
 #TODO/ bugs:
-    #Sanitize user inputs
-    #Allow changing bet amount and lines after first pull
-    #Make it so user cannot bet under 0 credits
-    #Program in diagonals for addtional lines
-    #Make chance for X variable accessible
-    #After Jackpot won a single line is played using a free game?
+    #! Sanitize user inputs
+    # Allow changing bet amount and lines after first pull
+    # Make it so user cannot bet under 0 credits
+    # Program in diagonals for addtional lines
+    # Make chance for X variable accessible
+    # In future, GUI?
+    # Make player bar scale with credit and win amount
+
 
 # Random for randomizing symbols, time for slowing down feature function
 import random
@@ -28,6 +30,7 @@ class playerData:
     previousWin = 0
     previousWinData = []
     freeGames = 0
+    hasFeature = False # fixes bug when getting feature
 
 
 # This is the function that checks player input
@@ -49,46 +52,44 @@ def playerInputFunc():
 
 
 def featureFunc(lines):
-    featureCounter = 6
-    lines = ""
+    featureCounter = 5
+    print("    FEATURE!")
+    time.sleep(1)
     lines = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
-    print("FEATURE!")
     while featureCounter > 0:
+        print(" \n")
         print(f"Feature Counter: {featureCounter}")
+        print("  _____________")
+        time.sleep(1)
         xPositions = []
         for a in range(len(lines)):
             for b in range(len(lines[a])):
                 if random.random() < 0.5 and lines[a][b] != "X":
                     lines[a][b] = "X"
-                    time.sleep(0.3)
                     xPositions.append([a, b])
         if len(lines) == 3:
-            print(f" {lines[0]}\n {lines[1]}\n {lines[2]} \n")
-        else:
-            print(lines)
+            print(f" {lines[0]}\n {lines[1]}\n {lines[2]}")
+            print("  ‾‾‾‾‾‾‾‾‾‾‾‾‾")
         featureCounter -= 1
 
         if all(line == ["X", "X", "X"] for line in lines):
             playerData.previousWin = playerData.previousWin + 1000 * playerData.betAmount
-            print("\
-                   ____   __    ___  _  _  ____  _____  ____ \n\
-                  (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
-                  .-_)(  /(__)\( (__  )  (  )___/ )(_)(   )(  \n\
-                  \____)(__)(__)\___)(_)\_)(__)  (_____) (__) \n\
-                      | 1000x return and 5 free games! |")
+            print(f"\
+              ____   __    ___  _  _  ____  _____  ____ \n\
+             (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
+            .-_)(  /(__)\( (__  )  (  )___/ )(_)(   )(  \n\
+            \____)(__)(__)\___)(_)\_)(__)  (_____) (__) \n\
+____________| 1000x [{playerData.previousWin}] return and 5 free games! |____________")
             playerData.freeGames = 6
             break
     playerData.previousWin = sum(line.count("X") for line in lines) * 20 * playerData.betAmount + playerData.previousWin
-    print(" ____________________________________________________________________________")
-    print(f"|You've won!: {playerData.previousWin}                                        ")
-    print(" ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾")
-
 
 # This is the math behind slot
 def leverPull():
-    #
+    playerData.hasFeature = False
     lines = []
     print(" \n \n")
+    print(" _____________")
     # Randomly chooses 3 from symbolChart and prints
     for a in range(playerData.lines):
         line = []
@@ -102,19 +103,22 @@ def leverPull():
             playerData.previousWin = slotLine.symbolMulti[slotLine.symbolChart.index(
                 line[0])] * playerData.betAmount * slotLine.threeOfAKind + playerData.previousWin
         # If not 3 of a kind, 2 of a kind
-        if line[0] == line[1]:
+        elif line[0] == line[1]:
             playerData.previousWin = slotLine.symbolMulti[slotLine.symbolChart.index(
                 line[0])] * playerData.betAmount + playerData.previousWin
         # Check if they are all X if so they hit a feature
         if line[0] == line[1] == line[2] == "X":
-            featureFunc(lines)
-    # If player doesn't spin 3 line and has no free games, take away credits
+             playerData.hasFeature = True
+
+    print(" ‾‾‾‾‾‾‾‾‾‾‾‾‾")
+    if playerData.hasFeature == True:
+        featureFunc(lines)
+
     if playerData.freeGames < 1:
         playerData.credit -= playerData.betAmount * playerData.lines
     else:
         playerData.freeGames = playerData.freeGames - 1
-    # Check if 3 from lines are the same
-
+    
     # Add previousWin to credit
     playerData.credit = playerData.credit + playerData.previousWin
     # Displays current status
