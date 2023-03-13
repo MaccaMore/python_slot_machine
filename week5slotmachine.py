@@ -1,7 +1,6 @@
 #TODO/ bugs:
-    #! Sanitize user inputs
-    # Allow changing bet amount and lines after first pull
-    # Make it so user cannot bet under 0 credits
+    # Allow changing bet amount and lines after first pull ( A: DONE)
+    # Make it so user cannot bet under 0 credits ( A: DONE)
     # Program in diagonals for addtional lines
     # Make chance for X variable accessible
     # In future, GUI?
@@ -9,7 +8,7 @@
 
 
 # Alex:
-# Currently: Fixing user inputs
+# Currently: Lamenting my existence
 
 # Random for randomizing symbols, time for slowing down feature function
 import random
@@ -33,13 +32,16 @@ class playerData:
     previousWin = 0
     previousWinData = []
     freeGames = 0
-    hasFeature = False # fixes bug when getting feature # A:NICE, boolean flags are a good way to control stuff
+    hasFeature = False # fixes bug when getting feature # A : NICE, boolean flags are a good way to control stuff
 
 # This is the function that checks player input
 def playerInputFunc():
     while True:
         playerInput = None # A: Reset playerInput to None to stop it from being used from previous loop
         try:
+            if playerData.credit <= 0:
+                print("You have no credits left. Game over.")
+                break
             playerInput = input("Press return to pull lever, or type 'help' for a list of commands: ")
             if playerInput == "help":
                 print("Commands: return/ enter, change lines, change bet, data")
@@ -49,17 +51,18 @@ def playerInputFunc():
                 # A: Is there a better way to do this that doesn't modifying the class attributes?
                 playerData.previousWin = 0
                 leverPull()
+                continue
             if playerInput == "change lines":
                 # A: split here is unnecessary, we can just call the chooseLines function
                 playerData.lines = chooseLines()
+                continue
             if playerInput == "change bet":
                 # A: split here is unnecessary, we can just call the makeBet function
                 playerData.betAmount = makeBet()
+                continue
             if playerInput == "data":
                 print(playerData.previousWinData)
-            if playerData.credit <= 0:
-                print("You have no credits left. Game over.")
-                break
+                continue
             else:
                 #throw an exception
                 raise ValueError
@@ -102,7 +105,7 @@ def startGame():
     print("This is a slot machine game. Type 'help' for a list of commands.")
     print("You start with 100 credits. Good luck!")
     playerData.credit = 100 # A: here to allow for modulation of code
-    # Check there are enough credits to play
+
     playerData.betAmount = makeBet() # A: this is a good way to handle user input
 
     playerData.lines = chooseLines()
