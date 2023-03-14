@@ -1,12 +1,16 @@
-#TODO/ bugs:
-    # Allow changing bet amount and lines after first pull ( A: DONE)
-    # Make it so user cannot bet under 0 credits ( A: DONE)
-    # Program in diagonals for addtional lines
-    # Make chance for X variable accessible
-    # In future, GUI?
-    # Make player bar scale with credit and win amount
-    # Make symbol have chances of appearing
-    # Psuedo random for feature symbol 
+#TODO
+    # Program in diagonals for additional lines
+        # When user puts only 1 or 2 lines, all 3 lists should be diplayed still
+        # up to 5 lines possible
+    # Allow specify chance of a particular symbol
+        #For example X should have lower chance to show
+    # Make player bar scale
+        # Read how many total characters for 'credit' 'betAmount' 'previous win' and print more '__'
+    # Add more ASCII art
+#BUG  
+    #User can bet under 0 credits for 1 pull
+    #User can change bet amount when they have free games from feature
+        #In pratice the user can increase the bet amount from low to high to game the system
 
 
 # Alex:
