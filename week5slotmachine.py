@@ -15,7 +15,8 @@
         #In pratice the user can increase the bet amount from low to high to game the system
     #Math for previousWins definitely wrong
 
-
+# Ash:
+    # LET ME DO SOME WORK NERD I HAVE OTHER CLASSES LMAO
 # Alex:
 # Currently: Lamenting my existence
 
@@ -25,10 +26,12 @@ import time
 
 
 # This class is so that values can easily be changed
-# !symbolChart and symbolMulti MUST HAVE THE SAME AMOUNT OF VALUES
+# !symbolChart and symbolMulti and symbolChance MUST HAVE THE SAME AMOUNT OF VALUES
+# !symbolChance MUST EQUAL 100 AND HAVE SAME VALUES
 class slotLine:
     symbolChart = ["X", "J", "K", "Q", "1"]
     symbolMulti = [10, 4, 3, 2, 1]
+    symbolChance = [15, 20, 25, 20, 20]
     threeOfAKind = 4
     betList = [1, 2, 10, 50, 200]
 
@@ -172,6 +175,7 @@ def leverPull():
     for a in range(playerData.lines):
         line = []
         for b in range(3):
+        #ma
             line.append(random.choice(slotLine.symbolChart))
         print(line)
         time.sleep(0.5)
