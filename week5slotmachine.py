@@ -25,6 +25,7 @@ import random
 import time
 
 
+
 # This class is so that values can easily be changed
 # !symbolChart and symbolMulti and symbolChance MUST HAVE THE SAME AMOUNT OF VALUES
 # !symbolChance MUST EQUAL 100 AND HAVE SAME VALUES
