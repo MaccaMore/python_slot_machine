@@ -2,11 +2,14 @@
     # Program in diagonals for additional lines
         # When user puts only 1 or 2 lines, all 3 lists should be diplayed still
         # up to 5 lines possible
-    # Allow specify chance of a particular symbol
+    #Work out better odds for game, I want the player to eventually lose
+
+    # Allow specify chance of a particular symbol #A: Done
         #For example X should have lower chance to show
-    # Make player bar scale
+    # Make player bar scale #A: DONE
         # Read how many total characters for 'credit' 'betAmount' 'previous win' and print more '__'
     # Add more ASCII art
+
     # A : Can we modularise counting previous win totals and credit won into their own seperate functions
         # This would allow for easier debugging and readability
 #BUG  
@@ -129,6 +132,8 @@ def startGame():
     playerInputFunc() # A: Call for user input controlling game
 
 
+# A: I think in order to handle this it needs to be split in to 3 lists, not a list of lists.
+# A: Means a rewrite of entire featureFunc I think. Can use code from leverPull
 def featureFunc(lines):
     featureCounter = 5
     print(" " * 19 +"FEATURE!")
