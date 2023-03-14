@@ -37,7 +37,7 @@ class playerData:
     lines = 0
     previousWin = 0
     previousWinData = []
-    freeGames = 0
+    freeGames = 5
     hasFeature = False # fixes bug when getting feature # A : NICE, boolean flags are a good way to control stuff
 
 # This is the function that checks player input
@@ -141,17 +141,17 @@ def featureFunc(lines):
         featureCounter -= 1
 
         if all(line == ["X", "X", "X"] for line in lines):
-            playerData.previousWin = playerData.previousWin + 1000 * playerData.betAmount
+            playerData.previousWin = playerData.previousWin + 100 * playerData.betAmount
             print(f"\
               ____   __    ___  _  _  ____  _____  ____ \n\
              (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
             .-_)(  /(__)\( (__  )  (  )___/ )(_)(   )(  \n\
             \____)(__)(__)\___)(_)\_)(__)  (_____) (__) \n\
-_____________| 1000x return    and     5 free games! |_____________")
+_____________|  100x return    and     5 free games! |_____________")
             time.sleep(2)
             playerData.freeGames = 6
             break
-    playerData.previousWin = sum(line.count("X") for line in lines) * 5 * playerData.betAmount + playerData.previousWin
+    playerData.previousWin = sum(line.count("X") for line in lines) * 3 * playerData.betAmount + playerData.previousWin
 
 
 # This is the math behind slot
@@ -166,7 +166,7 @@ def leverPull():
         for b in range(3):
             line.append(random.choice(slotLine.symbolChart))
         print(line)
-        time.sleep(0.1)
+        time.sleep(0.5)
         lines.append(line)
         # Checks if 3 of a kind
         if line[0] == line[1] == line[2]:
@@ -194,7 +194,7 @@ def leverPull():
     # Displays current status
     print(" ____________________________________________________________________________")
     print(
-        f"| Credits: {playerData.credit:.1f} | Previous Win: {playerData.previousWin * playerData.betAmount}"
+        f"| Credits: {playerData.credit:.1f} | Previous Win: {playerData.previousWin}"
         f" | Bet Amount: {playerData.betAmount} | Lines: {playerData.lines} | Free Games: {playerData.freeGames} |")
     print(" ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾")
 
