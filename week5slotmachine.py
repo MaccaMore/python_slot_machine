@@ -31,10 +31,10 @@ import time
 # !symbolChart and symbolMulti and symbolChance MUST HAVE THE SAME AMOUNT OF VALUES
 # !symbolChance does not have to equal 100, takes the sum and select a random number between them
 class slotLine:
-    symbolChart = ["$", "Q", "K", "J"]
-    symbolMulti = [10, 4, 3, 2]
-    symbolChance = [100, 15, 25, 40]
-    threeOfAKind = 4
+    symbolChart = ["🏧", "❎", "💟", "🈸"]
+    symbolMulti = [5, 4, 3, 1]
+    symbolChance = [10, 15, 25, 40]
+    threeOfAKind = 2
     betList = [1, 2, 10, 50, 200]
 
 
@@ -143,34 +143,37 @@ def featureFunc(lines):
     while featureCounter > 0:
         xPositions = []
         for a in range(len(lines)):
-            for b in range(len(lines[a])):
-                if random.random() < 0.3 and lines[a][b] != "$":
-                    lines[a][b] = "$"
-                    xPositions.append([a, b])
-        if len(lines) == 3:
-            print("\n" * 5)
-            #print(' ' * 20 + '[ ' + ' | '.join([''.join(lst) for lst in lines]) + ' ]')  
-            # # A: THIS IS LIST OF LISTS, NOT A SINGLE LIST LIKE leverPull, I wont be able to get this to work. ^Above is my attempt that failed
-            print(f" " * 17 + "_____________")
-            print(f" " * 16 + f"{lines[0]}\n" + f" " * 16 + f"{lines[1]}\n" + f" " * 16 + f"{lines[2]}")
-            print(" " * 17 + "‾‾‾‾‾‾‾‾‾‾‾‾‾")
-            print(" " * 14 + f"Feature Counter: {featureCounter}")
-            time.sleep(1)
+            if random.random() < 0.5 and lines[a] != "$":
+                for b in range(len(lines[a])):
+                    if random.random() <.5 and lines[a][b] != "$":
+                        lines[a][b] = "$"
+                        xPositions.append((a, b))
+
+        row_check = 0
+        for row in lines:
+            print(" " * 17 + "___________")
+            print(" " * 16 + f"[ {' | '.join(row)} ]")
+            if row_check < 2:
+                print(" " * 17 + "‾‾‾‾‾‾‾‾‾‾‾")
+        row_check += 1
+        print(" " * 13 + f"~Feature Counter: {featureCounter}~")
+        time.sleep(.7)
+        print("\n" * 7)
         featureCounter -= 1
 
         if all(line == ["$", "$", "$"] for line in lines):
-            playerData.previousWin = playerData.previousWin + 100 * playerData.betAmount
+            playerData.previousWin = playerData.previousWin + 150 * playerData.betAmount
             print("\n" * 6)
             print(f"\
    ____   __    ___  _  _  ____  _____  ____ \n\
   (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
  .-_)(  /(__)\( (__  )  (  )___/ )(_)(   )(  \n\
  \____)(__)(__)\___)(_)\_)(__)  (_____) (__) \n\
-  ~~~~ 100x return  and   5 free games! ~~~~")
+  ~~~~ 150x return  and   5 free games! ~~~~")
             time.sleep(2)
             playerData.freeGames = 5
             break
-    playerData.previousWin = sum(line.count("$") for line in lines) * 3 * playerData.betAmount + playerData.previousWin
+    playerData.previousWin += sum(line.count("$") for line in lines) * 4 * playerData.betAmount
 
 
 # This is the math behind slot
@@ -178,14 +181,14 @@ def leverPull():
     playerData.hasFeature = False
     lines = []
     print(" \n \n")
-    print(" " * 18 +"___________")
+    print(" " * 16 +"______________")
     # Randomly chooses 3 from symbolChart and prints
     for a in range(playerData.lines):
         line = []
         for b in range(3):
         #ma
             line.append(random.choices(slotLine.symbolChart, weights=slotLine.symbolChance)[0])
-        print('                 [ ' + ' | ' .join(line) + ' ]')
+        print('               [ ' + ' | ' .join(line) + ' ]')
         time.sleep(0.2)
         lines.append(line)
         # Checks if 3 of a kind
@@ -197,10 +200,10 @@ def leverPull():
             playerData.previousWin = slotLine.symbolMulti[slotLine.symbolChart.index(
                 line[0])] * playerData.betAmount + playerData.previousWin
         # Check if they are all X if so they hit a feature
-        if line[0] == line[1] == line[2] == "$":
+        if line[0] == line[1] == line[2] == "🏧":
              playerData.hasFeature = True
 
-    print(" " * 18 + "‾‾‾‾‾‾‾‾‾‾‾")
+    print(" " * 16 + "‾‾‾‾‾‾‾‾‾‾‾‾‾‾")
     if playerData.hasFeature == True:
         featureFunc(lines)
 
