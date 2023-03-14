@@ -8,9 +8,10 @@
         # Read how many total characters for 'credit' 'betAmount' 'previous win' and print more '__'
     # Add more ASCII art
 #BUG  
-    #User can bet under 0 credits for 1 pull
-    #User can change bet amount when they have free games from feature
+    #User can bet under 0 credits for 1 pull // A : Fixed
+    #User can change bet amount when they have free games from feature // A : Fixed
         #In pratice the user can increase the bet amount from low to high to game the system
+    #Math for previousWins definitely wrong
 
 
 # Alex:
@@ -82,6 +83,8 @@ def chooseLines():
     # ask player how many lines they want to play
     try:
         lines = int(input("How many lines would you like to play? (1-3): "))
+        if lines < 1 or lines > 3:
+            raise ValueError # A: prevents the user from entering a number outside of the range
     except ValueError:
         print("Please enter a valid number.")
         return chooseLines()
@@ -94,6 +97,9 @@ def chooseLines():
 # A : User input for bet function
 def makeBet():
     # ask player how much they want to bet, reference list from slotLine
+    if (playerData.freeGames > 0): # A: This should fix being able to change bet amount when you have free games
+        print("You have free games remaining. You must play them before changing your bet.")
+        return playerData.betAmount
     try:
         betAmount = int(input("How much would you like to bet?: " + str(slotLine.betList) + ": "))
         if betAmount not in slotLine.betList:
