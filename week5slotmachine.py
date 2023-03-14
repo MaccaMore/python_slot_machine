@@ -1,152 +1,225 @@
-#Plan for code:
-#Slot machine with only have 3 lines, 
-# a list with each character that includes multiplier for 2 and 3 of a kind. 
-#   If all 3 are 'X', go to a feature function
-#   If all 9 in the 3 lines are X, 1000x return and 10 free spins
-#At bottom of console always show: "Credit:", "Previous win:" "Bet Amount", "Lines"
-#   Allow user to input only return to bet again
-#   Allow user to select bet amount from a list
-#   Allow user to select 1-3 lines
-#Inputs can be: "return" "line [1-3]" "bet [$.50, $2, $10, $50]" "help (shows commands)
+#TODO
+    # Program in diagonals for additional lines
+        # When user puts only 1 or 2 lines, all 3 lists should be diplayed still
+        # up to 5 lines possible
+    #Work out better odds for game, I want the player to eventually lose
 
-#TODO/ bugs:
-    #Sanitize user inputs
-    #Allow changing bet amount and lines after first pull
+    # Allow specify chance of a particular symbol #A: Done
+        #For example X should have lower chance to show
+    # Make player bar scale #A: DONE
+        # Read how many total characters for 'credit' 'betAmount' 'previous win' and print more '__'
+    # Add more ASCII art
 
-#Random for randomizing symbols, time for slowing down feature function
+    # A : Can we modularise counting previous win totals and credit won into their own seperate functions
+        # This would allow for easier debugging and readability
+#BUG  
+    #Math for previousWins definitely wrong
+    # A: I fixed it in last commit, it was multiplying by betAmount twice I think
+
+# Ash:
+    # LET ME DO SOME WORK NERD I HAVE OTHER CLASSES LMAO
+# Alex:
+# Currently: Lamenting my existence
+
+# Random for randomizing symbols, time for slowing down feature function
 import random
 import time
 
-#This class is so that values can easily be changed
-#!symbolChart and symbolMulti MUST HAVE THE SAME AMOUNT OF VALUES
-class slotLine():
-    symbolChart = ["X","J", "K", "Q", "1"]
-    symbolMulti = [8, 3, 2, 2, 1]
-    threeOfAKind = 3
+
+
+# This class is so that values can easily be changed
+# !symbolChart and symbolMulti and symbolChance MUST HAVE THE SAME AMOUNT OF VALUES
+# !symbolChance does not have to equal 100, takes the sum and select a random number between them
+class slotLine:
+    symbolChart = ["$", "Q", "K", "J"]
+    symbolMulti = [10, 4, 3, 2]
+    symbolChance = [100, 15, 25, 40]
+    threeOfAKind = 4
     betList = [1, 2, 10, 50, 200]
-    
-#This class stores the game variables
-class playerData():
-    credit = 100
+
+
+# This class stores the game variables
+class playerData:
+    credit = 0
     betAmount = 0
     lines = 0
     previousWin = 0
     previousWinData = []
     freeGames = 0
+    hasFeature = False # fixes bug when getting feature # A : NICE, boolean flags are a good way to control stuff
 
-#We put this as global so that both levelPull and featureFunc can call
-lines = []
-
-#This is the function that checks player input
+# This is the function that checks player input
 def playerInputFunc():
-    playerInput = input()
-    if playerInput == "help":
-        print("Commands: return/ enter, line [1-3], bet [1, 2, 10, 50], data")
-    if playerInput == "":
-        #I am using previousWin and total win to keep track of the winnings, so we reset for new run here
-        playerData.previousWin = 0
-        leverPull()
-        #Split the text and reference the second word, then convert to int
-    if playerInput == "line [1-3]":
-        playerData.lines = int(playerInput.split()[1])
-    if playerInput == "bet [.50, 2, 10, 50]":
-        playerData.betAmount = int(playerInput.split()[1])
-    if playerInput == "data":
-        print(playerData.previousWinData)
+    while True:
+        playerInput = None # A: Reset playerInput to None to stop it from being used from previous loop
+        try:
+            if playerData.credit <= 0:
+                print("You have no credits left. Game over.")
+                break
+            playerInput = input(" Return to pull lever, or type 'help': ")
+            if playerInput == "help":
+                print("Commands: return/ enter, change lines, change bet, data")
+                continue
+            if playerInput == "":
+                # I am using previousWin and total win to keep track of the winnings, so we reset for new run here
+                # A: Is there a better way to do this that doesn't modifying the class attributes?
+                playerData.previousWin = 0
+                leverPull()
+                continue
+            if playerInput == "change lines":
+                # A: split here is unnecessary, we can just call the chooseLines function
+                playerData.lines = chooseLines()
+                continue
+            if playerInput == "change bet":
+                # A: split here is unnecessary, we can just call the makeBet function
+                playerData.betAmount = makeBet()
+                continue
+            if playerInput == "data":
+                print(playerData.previousWinData)
+                continue
+            else:
+                #throw an exception
+                raise ValueError
+        except ValueError:
+            print("Please enter a valid command. Type 'help' for a list of commands.")
+            continue
+    
 
-def featureFunc():
-    featureCounter = 6
+# A : User input for lines function
+def chooseLines():
+    # ask player how many lines they want to play
+    try:
+        lines = int(input("How many lines would you like to play? (1-3): "))
+        if lines < 1 or lines > 3:
+            raise ValueError # A: prevents the user from entering a number outside of the range
+    except ValueError:
+        print("Please enter a valid number.")
+        return chooseLines()
+    if playerData.lines > 3:
+        print("You can only play up to 3 lines.")
+        return chooseLines() # recursively calls chooseLines until a valid input is passed
+    return lines
+
+
+# A : User input for bet function
+def makeBet():
+    # ask player how much they want to bet, reference list from slotLine
+    if (playerData.freeGames > 0): # A: This should fix being able to change bet amount when you have free games
+        print("You have free games remaining. You must play them before changing your bet.") #Oh no this broke the game, it makes it so they can have a bet amount of null lmao
+        return playerData.betAmount
+    try:
+        betAmount = int(input("How much would you like to bet?: " + str(slotLine.betList) + ": "))
+        if betAmount not in slotLine.betList:
+            raise ValueError
+    except ValueError:
+        print("Please enter a valid number.")
+        return makeBet()
+    if betAmount > playerData.credit:
+        print("You don't have enough credits to play this high.")
+        return makeBet() # recursively calls makeBet until a valid input is passed
+    return betAmount
+
+
+def startGame():
+    print("This is a slot machine game. Type 'help' for a list of commands.")
+    print("You start with 100 credits. Good luck!")
+    playerData.credit = 100 # A: here to allow for modulation of code
+
+    playerData.betAmount = makeBet() # A: this is a good way to handle user input
+
+    playerData.lines = chooseLines()
+
+    playerInputFunc() # A: Call for user input controlling game
+
+
+# A: I think in order to handle this it needs to be split in to 3 lists, not a list of lists.
+# A: Means a rewrite of entire featureFunc I think. Can use code from leverPull
+def featureFunc(lines):
+    featureCounter = 5
+    print(" " * 19 +"FEATURE!")
+    time.sleep(1)
+    print("\n" * 6)
     lines = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
-    print("FEATURE!")
     while featureCounter > 0:
         xPositions = []
         for a in range(len(lines)):
             for b in range(len(lines[a])):
-                if random.random() < 0.2 and lines[a][b] != "X":
-                    lines[a][b] = "X"
-                    time.sleep(0.3)
+                if random.random() < 0.3 and lines[a][b] != "$":
+                    lines[a][b] = "$"
                     xPositions.append([a, b])
         if len(lines) == 3:
-            print(f" {lines[0]}\n {lines[1]}\n {lines[2]} \n")
-        else:
-            print(lines)
+            print("\n" * 5)
+            #print(' ' * 20 + '[ ' + ' | '.join([''.join(lst) for lst in lines]) + ' ]')  
+            # # A: THIS IS LIST OF LISTS, NOT A SINGLE LIST LIKE leverPull, I wont be able to get this to work. ^Above is my attempt that failed
+            print(f" " * 17 + "_____________")
+            print(f" " * 16 + f"{lines[0]}\n" + f" " * 16 + f"{lines[1]}\n" + f" " * 16 + f"{lines[2]}")
+            print(" " * 17 + "‾‾‾‾‾‾‾‾‾‾‾‾‾")
+            print(" " * 14 + f"Feature Counter: {featureCounter}")
+            time.sleep(1)
         featureCounter -= 1
-        print(f"Feature Counter: {featureCounter}")
-        
-        if all(line == ["X", "X", "X"] for line in lines):
-            playerData.previousWin = playerData.previousWin + 1000 * playerData.betAmount
-            print("\
-                   ____   __    ___  _  _  ____  _____  ____ \n\
-                  (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
-                  .-_)(  /(__)\( (__  )  (  )___/ )(_)(   )(  \n\
-                  \____)(__)(__)\___)(_)\_)(__)  (_____) (__) \n\
-            | 1000x return and 5 free games! |")
-            playerData.freeGames = 6
-            break
-        else:
-            playerData.freeGames = sum(line.count("X") for line in lines)
-            playerData.previousWin = sum(line.count("X") for line in lines) * 20 * playerData.betAmount + playerData.previousWin
-            print(f"You win: {playerData.previousWin} Free Games: {playerData.freeGames}")
 
-#This is the math behind slot
+        if all(line == ["$", "$", "$"] for line in lines):
+            playerData.previousWin = playerData.previousWin + 100 * playerData.betAmount
+            print("\n" * 6)
+            print(f"\
+   ____   __    ___  _  _  ____  _____  ____ \n\
+  (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
+ .-_)(  /(__)\( (__  )  (  )___/ )(_)(   )(  \n\
+ \____)(__)(__)\___)(_)\_)(__)  (_____) (__) \n\
+  ~~~~ 100x return  and   5 free games! ~~~~")
+            time.sleep(2)
+            playerData.freeGames = 5
+            break
+    playerData.previousWin = sum(line.count("$") for line in lines) * 3 * playerData.betAmount + playerData.previousWin
+
+
+# This is the math behind slot
 def leverPull():
-    #Randomly chooses 3 from symbolChart and prints
+    playerData.hasFeature = False
+    lines = []
+    print(" \n \n")
+    print(" " * 18 +"___________")
+    # Randomly chooses 3 from symbolChart and prints
     for a in range(playerData.lines):
         line = []
         for b in range(3):
-            line.append(random.choice(slotLine.symbolChart))
-        print(line)
+        #ma
+            line.append(random.choices(slotLine.symbolChart, weights=slotLine.symbolChance)[0])
+        print('                 [ ' + ' | ' .join(line) + ' ]')
+        time.sleep(0.2)
         lines.append(line)
-        #Checks if 3 of a kind
+        # Checks if 3 of a kind
         if line[0] == line[1] == line[2]:
-            playerData.previousWin = slotLine.symbolMulti[slotLine.symbolChart.index(line[0])] * playerData.betAmount * slotLine.threeOfAKind + playerData.previousWin
-        #If not 3 of a kind, 2 of a kind
-        if line[0] == line[1]:
-            playerData.previousWin = slotLine.symbolMulti[slotLine.symbolChart.index(line[0])] * playerData.betAmount + playerData.previousWin
-        #Check if they are all X if so they hit a feature
-        if line[0] == line[1] == line[2] == "X":
-            featureFunc()
-    #If player doesnt spin 3 line and has no free games, take away credits
+            playerData.previousWin = slotLine.symbolMulti[slotLine.symbolChart.index(
+                line[0])] * playerData.betAmount * slotLine.threeOfAKind + playerData.previousWin
+        # If not 3 of a kind, 2 of a kind
+        elif line[0] == line[1]:
+            playerData.previousWin = slotLine.symbolMulti[slotLine.symbolChart.index(
+                line[0])] * playerData.betAmount + playerData.previousWin
+        # Check if they are all X if so they hit a feature
+        if line[0] == line[1] == line[2] == "$":
+             playerData.hasFeature = True
+
+    print(" " * 18 + "‾‾‾‾‾‾‾‾‾‾‾")
+    if playerData.hasFeature == True:
+        featureFunc(lines)
+
     if playerData.freeGames < 1:
-     playerData.credit -= playerData.betAmount * playerData.lines
+        playerData.credit -= playerData.betAmount * playerData.lines
     else:
         playerData.freeGames = playerData.freeGames - 1
-    #Check if 3 from lines are the same
-   
-        
-  
-    #Add previousWin to credit
+    
+    # Add previousWin to credit
     playerData.credit = playerData.credit + playerData.previousWin
-    #Displays current status
-    print(f"| Credits: {playerData.credit:.1f} | Previous Win: {playerData.previousWin * playerData.betAmount} | Bet Amount: {playerData.betAmount} | Lines: {playerData.lines} | Free Games: {playerData.freeGames} |")
+    # Displays current status
+    print(" " + ("_" * 44))
+    print(f"| Credits: {playerData.credit:.1f} | Previous Win: {playerData.previousWin}".ljust(45) + "|")
+    print(f"| Bet Amount: {playerData.betAmount} | Lines: {playerData.lines} | Free Games: {playerData.freeGames}" .ljust(45) + "|")
+    print(" " + "‾" * 44)
 
-    
+    # Add previousWin to previousWinData list for win tracking
+    # Instead of storing previous win here, I store what the multiplier would have been. IE previouswin = 180/ 10 / 3 = 6 per 1 credit bet 
+    playerData.previousWinData.append(playerData.previousWin/playerData.betAmount/playerData.lines)
+    lines = []
 
-    #Add previousWin to previousWinData list for win tracking
-    playerData.previousWinData.append(playerData.previousWin)
-
-    
-
-
-print("This is a slot machine game. Type 'help' for a list of commands.")
-print("You start with 100 credits. Good luck!")
-#ask player how many lines they want to play
-playerData.lines = int(input("How many lines would you like to play? (1-3): "))
-#ask player how much they want to bet, reference list from slotLine
-playerData.betAmount = int(input("How much would you like to bet?: " + str(slotLine.betList) + ": "))
-#Check there are enough credits to play
-if playerData.betAmount > playerData.credit:
-    print("You don't have enough credits to play this high yet.")
-    playerData.betAmount = int(input("How much would you like to bet?" + str(slotLine.betList) + ": "))
-print("Type 'help' for commands")
-
-
-
-#Loop for game, player inputs can be "help", "return", "line [1-3]", "bet [$.50, $2, $10, $50]"
-while playerData.credit > 0:
-    playerInputFunc()
-else:
-    print("You have no more credits. Game over.")
-
-
-
+startGame()
