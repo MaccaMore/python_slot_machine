@@ -10,10 +10,8 @@
     # A : Can we modularise counting previous win totals and credit won into their own seperate functions
         # This would allow for easier debugging and readability
 #BUG  
-    #User can bet under 0 credits for 1 pull // A : Fixed
-    #User can change bet amount when they have free games from feature // A : Fixed
-        #In pratice the user can increase the bet amount from low to high to game the system
     #Math for previousWins definitely wrong
+    # A: I fixed it in last commit, it was multiplying by betAmount twice I think
 
 # Ash:
     # LET ME DO SOME WORK NERD I HAVE OTHER CLASSES LMAO
@@ -28,11 +26,11 @@ import time
 
 # This class is so that values can easily be changed
 # !symbolChart and symbolMulti and symbolChance MUST HAVE THE SAME AMOUNT OF VALUES
-# !symbolChance MUST EQUAL 100 AND HAVE SAME VALUES
+# !symbolChance does not have to equal 100, takes the sum and select a random number between them
 class slotLine:
-    symbolChart = ["X", "J", "K", "Q", "1"]
-    symbolMulti = [10, 4, 3, 2, 1]
-    symbolChance = [15, 20, 25, 20, 20]
+    symbolChart = ["$", "K", "@", "#"]
+    symbolMulti = [10, 4, 3, 2]
+    symbolChance = [10, 15, 25, 200]
     threeOfAKind = 4
     betList = [1, 2, 10, 50, 200]
 
@@ -44,7 +42,7 @@ class playerData:
     lines = 0
     previousWin = 0
     previousWinData = []
-    freeGames = 5
+    freeGames = 0
     hasFeature = False # fixes bug when getting feature # A : NICE, boolean flags are a good way to control stuff
 
 # This is the function that checks player input
@@ -104,7 +102,7 @@ def chooseLines():
 def makeBet():
     # ask player how much they want to bet, reference list from slotLine
     if (playerData.freeGames > 0): # A: This should fix being able to change bet amount when you have free games
-        print("You have free games remaining. You must play them before changing your bet.")
+        print("You have free games remaining. You must play them before changing your bet.") #Oh no this broke the game, it makes it so they can have a bet amount of null lmao
         return playerData.betAmount
     try:
         betAmount = int(input("How much would you like to bet?: " + str(slotLine.betList) + ": "))
@@ -114,7 +112,7 @@ def makeBet():
         print("Please enter a valid number.")
         return makeBet()
     if betAmount > playerData.credit:
-        print("You don't have enough credits to play this high yet.")
+        print("You don't have enough credits to play this high.")
         return makeBet() # recursively calls makeBet until a valid input is passed
     return betAmount
 
@@ -144,16 +142,16 @@ def featureFunc(lines):
         xPositions = []
         for a in range(len(lines)):
             for b in range(len(lines[a])):
-                if random.random() < 0.3 and lines[a][b] != "X":
-                    lines[a][b] = "X"
+                if random.random() < 0.3 and lines[a][b] != "$":
+                    lines[a][b] = "$"
                     xPositions.append([a, b])
         if len(lines) == 3:
             print(f" {lines[0]}\n {lines[1]}\n {lines[2]}")
             print("  ‾‾‾‾‾‾‾‾‾‾‾‾‾")
         featureCounter -= 1
 
-        if all(line == ["X", "X", "X"] for line in lines):
-            playerData.previousWin = playerData.previousWin + 1000 * playerData.betAmount
+        if all(line == ["$", "$", "$"] for line in lines):
+            playerData.previousWin = playerData.previousWin + 100 * playerData.betAmount
             print(f"\
               ____   __    ___  _  _  ____  _____  ____ \n\
              (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
@@ -163,7 +161,7 @@ _____________|  100x return    and     5 free games! |_____________")
             time.sleep(2)
             playerData.freeGames = 6
             break
-    playerData.previousWin = sum(line.count("X") for line in lines) * 3 * playerData.betAmount + playerData.previousWin
+    playerData.previousWin = sum(line.count("$") for line in lines) * 3 * playerData.betAmount + playerData.previousWin
 
 
 # This is the math behind slot
@@ -177,7 +175,7 @@ def leverPull():
         line = []
         for b in range(3):
         #ma
-            line.append(random.choice(slotLine.symbolChart))
+            line.append(random.choices(slotLine.symbolChart, weights=slotLine.symbolChance)[0])
         print(line)
         time.sleep(0.5)
         lines.append(line)
@@ -190,7 +188,7 @@ def leverPull():
             playerData.previousWin = slotLine.symbolMulti[slotLine.symbolChart.index(
                 line[0])] * playerData.betAmount + playerData.previousWin
         # Check if they are all X if so they hit a feature
-        if line[0] == line[1] == line[2] == "X":
+        if line[0] == line[1] == line[2] == "$":
              playerData.hasFeature = True
 
     print(" ‾‾‾‾‾‾‾‾‾‾‾‾‾")
