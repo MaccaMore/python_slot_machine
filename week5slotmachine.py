@@ -2,6 +2,10 @@
     # Program in diagonals for additional lines
         # When user puts only 1 or 2 lines, all 3 lists should be diplayed still
         # up to 5 lines possible
+    # I am happy with the version of the build. No major bugs. Do not think I am learning much more from this project.
+        # Maybe in future I will come back to this and add the extra lines. I need to working on another project.
+    # The only thing I can work on now is ensuring the odds are fair. I will write data to file and analyse it
+
     #Work out better odds for game, I want the player to eventually lose
 
     # Allow specify chance of a particular symbol #A: Done
@@ -12,16 +16,9 @@
 
     # A : Can we modularise counting previous win totals and credit won into their own seperate functions
         # This would allow for easier debugging and readability
-#BUG  
-    #Math for previousWins definitely wrong
-    # A: I fixed it in last commit, it was multiplying by betAmount twice I think
+#BUG
+    # I found a bug, could still bet under 0 credits. This occurrred because although it was checking enough credits, it was not checking for the * lines
 
-# Ash:
-    # LET ME DO SOME WORK NERD I HAVE OTHER CLASSES LMAO
-# Alex:
-# Currently: Lamenting my existence
-
-# Random for randomizing symbols, time for slowing down feature function
 import random
 import time
 
@@ -114,7 +111,7 @@ def makeBet():
     except ValueError:
         print("Please enter a valid number.")
         return makeBet()
-    if betAmount > playerData.credit:
+    if betAmount * playerData.lines > playerData.credit:
         print("You don't have enough credits to play this high.")
         return makeBet() # recursively calls makeBet until a valid input is passed
     return betAmount
@@ -122,7 +119,7 @@ def makeBet():
 
 def startGame():
     print("This is a slot machine game. Type 'help' for a list of commands.")
-    print("You start with 100 credits. Good luck!")
+    print("You start with 100 credits. Get 3 🏧 in a row for feature. Good luck!")
     playerData.credit = 100 # A: here to allow for modulation of code
 
     playerData.betAmount = makeBet() # A: this is a good way to handle user input
@@ -142,12 +139,12 @@ def featureFunc(lines):
     lines = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
     while featureCounter > 0:
         xPositions = []
-        for a in range(len(lines)):
-            if random.random() < 0.5 and lines[a] != "$":
-                for b in range(len(lines[a])):
-                    if random.random() <.5 and lines[a][b] != "$":
+        for a in range(len(lines)): # This line generates an int from 0-9 (length of lines) stored in 'a', it also loops for the length of this int
+            if random.random() < 0.5 and lines[a] != "$": #If number in the 'a' list are not $
+                for b in range(len(lines[a])): # This line generates an int from 0-'a' stored in 'b'. Iterates over the characters in the 'a' list
+                    if random.random() <.5 and lines[a][b] != "$": 
                         lines[a][b] = "$"
-                        xPositions.append((a, b))
+                        xPositions.append((a, b)) # I should think of a as rows, b as columns
 
         row_check = 0
         for row in lines:
