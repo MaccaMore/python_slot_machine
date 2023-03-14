@@ -30,7 +30,7 @@ import time
 class slotLine:
     symbolChart = ["$", "Q", "K", "J"]
     symbolMulti = [10, 4, 3, 2]
-    symbolChance = [10, 15, 25, 40]
+    symbolChance = [100, 15, 25, 40]
     threeOfAKind = 4
     betList = [1, 2, 10, 50, 200]
 
@@ -53,7 +53,7 @@ def playerInputFunc():
             if playerData.credit <= 0:
                 print("You have no credits left. Game over.")
                 break
-            playerInput = input("Press return to pull lever, or type 'help' for a list of commands: ")
+            playerInput = input(" Return to pull lever, or type 'help': ")
             if playerInput == "help":
                 print("Commands: return/ enter, change lines, change bet, data")
                 continue
@@ -131,37 +131,41 @@ def startGame():
 
 def featureFunc(lines):
     featureCounter = 5
-    print("    FEATURE!")
+    print(" " * 19 +"FEATURE!")
     time.sleep(1)
-    lines = [' ', ' ' , ' ', ' '], [' ', ' ' , ' ', ' '], [[' ', ' ' , ' ', ' ']]
+    print("\n" * 6)
+    lines = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
     while featureCounter > 0:
-        print(" \n")
-        print(f"Feature Counter: {featureCounter}")
-        print("  _____________")
-        time.sleep(1)
         xPositions = []
         for a in range(len(lines)):
             for b in range(len(lines[a])):
-                if random.random() < 0.3 and lines[a][b] != "⭐":
+                if random.random() < 0.3 and lines[a][b] != "$":
                     lines[a][b] = "$"
                     xPositions.append([a, b])
         if len(lines) == 3:
-            print(f" {lines[0]}\n {lines[1]}\n {lines[2]}")
-            print("  ‾‾‾‾‾‾‾‾‾‾‾‾‾")
+            print("\n" * 5)
+            #print(' ' * 20 + '[ ' + ' | '.join([''.join(lst) for lst in lines]) + ' ]')  
+            # # A: THIS IS LIST OF LISTS, NOT A SINGLE LIST LIKE leverPull, I wont be able to get this to work. ^Above is my attempt that failed
+            print(f" " * 17 + "_____________")
+            print(f" " * 16 + f"{lines[0]}\n" + f" " * 16 + f"{lines[1]}\n" + f" " * 16 + f"{lines[2]}")
+            print(" " * 17 + "‾‾‾‾‾‾‾‾‾‾‾‾‾")
+            print(" " * 14 + f"Feature Counter: {featureCounter}")
+            time.sleep(1)
         featureCounter -= 1
 
-        if all(line == ["⭐", "⭐", "⭐"] for line in lines):
+        if all(line == ["$", "$", "$"] for line in lines):
             playerData.previousWin = playerData.previousWin + 100 * playerData.betAmount
+            print("\n" * 6)
             print(f"\
-              ____   __    ___  _  _  ____  _____  ____ \n\
-             (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
-            .-_)(  /(__)\( (__  )  (  )___/ )(_)(   )(  \n\
-            \____)(__)(__)\___)(_)\_)(__)  (_____) (__) \n\
-_____________|  100x return    and     5 free games! |_____________")
+   ____   __    ___  _  _  ____  _____  ____ \n\
+  (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
+ .-_)(  /(__)\( (__  )  (  )___/ )(_)(   )(  \n\
+ \____)(__)(__)\___)(_)\_)(__)  (_____) (__) \n\
+  ~~~~ 100x return  and   5 free games! ~~~~")
             time.sleep(2)
-            playerData.freeGames = 6
+            playerData.freeGames = 5
             break
-    playerData.previousWin = sum(line.count("⭐") for line in lines) * 3 * playerData.betAmount + playerData.previousWin
+    playerData.previousWin = sum(line.count("$") for line in lines) * 3 * playerData.betAmount + playerData.previousWin
 
 
 # This is the math behind slot
@@ -169,15 +173,15 @@ def leverPull():
     playerData.hasFeature = False
     lines = []
     print(" \n \n")
-    print(" ___________")
+    print(" " * 18 +"___________")
     # Randomly chooses 3 from symbolChart and prints
     for a in range(playerData.lines):
         line = []
         for b in range(3):
         #ma
             line.append(random.choices(slotLine.symbolChart, weights=slotLine.symbolChance)[0])
-        print('[ ' + ' | ' .join(line) + ' ]')
-        time.sleep(0.5)
+        print('                 [ ' + ' | ' .join(line) + ' ]')
+        time.sleep(0.2)
         lines.append(line)
         # Checks if 3 of a kind
         if line[0] == line[1] == line[2]:
@@ -191,7 +195,7 @@ def leverPull():
         if line[0] == line[1] == line[2] == "$":
              playerData.hasFeature = True
 
-    print(" ‾‾‾‾‾‾‾‾‾‾‾")
+    print(" " * 18 + "‾‾‾‾‾‾‾‾‾‾‾")
     if playerData.hasFeature == True:
         featureFunc(lines)
 
@@ -203,10 +207,10 @@ def leverPull():
     # Add previousWin to credit
     playerData.credit = playerData.credit + playerData.previousWin
     # Displays current status
-    print(" " + ("_" * 79))
-    print(f"| Credits: {playerData.credit:.1f} | Previous Win: {playerData.previousWin}".ljust(80) + "|")
-    print(f"| Bet Amount: {playerData.betAmount} | Lines: {playerData.lines} | Free Games: {playerData.freeGames}" .ljust(80) + "|")
-    print(" " + "‾" * 79)
+    print(" " + ("_" * 44))
+    print(f"| Credits: {playerData.credit:.1f} | Previous Win: {playerData.previousWin}".ljust(45) + "|")
+    print(f"| Bet Amount: {playerData.betAmount} | Lines: {playerData.lines} | Free Games: {playerData.freeGames}" .ljust(45) + "|")
+    print(" " + "‾" * 44)
 
     # Add previousWin to previousWinData list for win tracking
     # Instead of storing previous win here, I store what the multiplier would have been. IE previouswin = 180/ 10 / 3 = 6 per 1 credit bet 
