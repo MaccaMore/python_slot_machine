@@ -28,9 +28,9 @@ import time
 # !symbolChart and symbolMulti and symbolChance MUST HAVE THE SAME AMOUNT OF VALUES
 # !symbolChance does not have to equal 100, takes the sum and select a random number between them
 class slotLine:
-    symbolChart = ["$", "K", "@", "#"]
+    symbolChart = ["⭐", "Q", "K", "J"]
     symbolMulti = [10, 4, 3, 2]
-    symbolChance = [10, 15, 25, 200]
+    symbolChance = [10, 15, 25, 40]
     threeOfAKind = 4
     betList = [1, 2, 10, 50, 200]
 
@@ -142,15 +142,15 @@ def featureFunc(lines):
         xPositions = []
         for a in range(len(lines)):
             for b in range(len(lines[a])):
-                if random.random() < 0.3 and lines[a][b] != "$":
-                    lines[a][b] = "$"
+                if random.random() < 0.3 and lines[a][b] != "⭐":
+                    lines[a][b] = "⭐"
                     xPositions.append([a, b])
         if len(lines) == 3:
             print(f" {lines[0]}\n {lines[1]}\n {lines[2]}")
             print("  ‾‾‾‾‾‾‾‾‾‾‾‾‾")
         featureCounter -= 1
 
-        if all(line == ["$", "$", "$"] for line in lines):
+        if all(line == ["⭐", "⭐", "⭐"] for line in lines):
             playerData.previousWin = playerData.previousWin + 100 * playerData.betAmount
             print(f"\
               ____   __    ___  _  _  ____  _____  ____ \n\
@@ -161,7 +161,7 @@ _____________|  100x return    and     5 free games! |_____________")
             time.sleep(2)
             playerData.freeGames = 6
             break
-    playerData.previousWin = sum(line.count("$") for line in lines) * 3 * playerData.betAmount + playerData.previousWin
+    playerData.previousWin = sum(line.count("⭐") for line in lines) * 3 * playerData.betAmount + playerData.previousWin
 
 
 # This is the math behind slot
@@ -188,7 +188,7 @@ def leverPull():
             playerData.previousWin = slotLine.symbolMulti[slotLine.symbolChart.index(
                 line[0])] * playerData.betAmount + playerData.previousWin
         # Check if they are all X if so they hit a feature
-        if line[0] == line[1] == line[2] == "$":
+        if line[0] == line[1] == line[2] == "⭐":
              playerData.hasFeature = True
 
     print(" ‾‾‾‾‾‾‾‾‾‾‾‾‾")
@@ -210,7 +210,8 @@ def leverPull():
     print(" ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾")
 
     # Add previousWin to previousWinData list for win tracking
-    playerData.previousWinData.append(playerData.previousWin)
+    # Instead of storing previous win here, I store what the multiplier would have been. IE previouswin = 180/ 10 / 3 = 6 per 1 credit bet 
+    playerData.previousWinData.append(playerData.previousWin/playerData.betAmount/playerData.lines)
     lines = []
 
 startGame()
