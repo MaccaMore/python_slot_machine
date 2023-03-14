@@ -7,6 +7,8 @@
     # Make player bar scale
         # Read how many total characters for 'credit' 'betAmount' 'previous win' and print more '__'
     # Add more ASCII art
+    # A : Can we modularise counting previous win totals and credit won into their own seperate functions
+        # This would allow for easier debugging and readability
 #BUG  
     #User can bet under 0 credits for 1 pull // A : Fixed
     #User can change bet amount when they have free games from feature // A : Fixed
@@ -147,7 +149,7 @@ def featureFunc(lines):
         featureCounter -= 1
 
         if all(line == ["X", "X", "X"] for line in lines):
-            playerData.previousWin = playerData.previousWin + 1000 * playerData.betAmount
+            playerData.previousWin = playerData.previousWin + 1000 * playerData.betAmount 
             print(f"\
               ____   __    ___  _  _  ____  _____  ____ \n\
              (_  _) /__\  / __)( )/ )(  _ \(  _  )(_  _)\n\
