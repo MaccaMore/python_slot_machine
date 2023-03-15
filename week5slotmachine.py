@@ -30,7 +30,7 @@ import time
 class slotLine:
     symbolChart = ["🏧", "❎", "💟", "🈸"]
     symbolMulti = [5, 4, 3, 1]
-    symbolChance = [10, 15, 25, 40]
+    symbolChance = [20, 15, 25, 40]
     threeOfAKind = 2
     betList = [1, 2, 10, 50, 200]
 
@@ -57,11 +57,12 @@ def playerInputFunc():
             if playerInput == "help":
                 print("Commands: return/ enter, change lines, change bet, data")
                 continue
-            if playerInput == "":
-                # I am using previousWin and total win to keep track of the winnings, so we reset for new run here
-                # A: Is there a better way to do this that doesn't modifying the class attributes?
+            if playerInput == "" and playerData.betAmount * playerData.lines <= playerData.credit:
                 playerData.previousWin = 0
                 leverPull()
+                continue
+            if playerInput == "" and playerData.betAmount * playerData.lines >= playerData.credit:
+                print("You don't have enough credits, change your bet amount.")
                 continue
             if playerInput == "change lines":
                 # A: split here is unnecessary, we can just call the chooseLines function
@@ -111,7 +112,7 @@ def makeBet():
     except ValueError:
         print("Please enter a valid number.")
         return makeBet()
-    if betAmount * playerData.lines > playerData.credit:
+    if betAmount * playerData.lines >= playerData.credit:
         print("You don't have enough credits to play this high.")
         return makeBet() # recursively calls makeBet until a valid input is passed
     return betAmount
@@ -219,7 +220,7 @@ def leverPull():
 
     # Add previousWin to previousWinData list for win tracking
     # Instead of storing previous win here, I store what the multiplier would have been. IE previouswin = 180/ 10 / 3 = 6 per 1 credit bet 
-    playerData.previousWinData.append(playerData.previousWin/playerData.betAmount/playerData.lines)
+    playerData.previousWinData.append(round(playerData.previousWin/(playerData.betAmount/playerData.lines), 2))
     lines = []
 
 startGame()
